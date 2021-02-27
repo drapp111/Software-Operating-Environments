@@ -1,0 +1,33 @@
+<simulation>
+	<log>console</log> <!-- Identify where simulation messages should be displayed.
+						One of two values allowed: file || console.
+						When file is specified, the messages are written to a file whose name
+						matches the scenario file name but with a file extension of log.-->
+	<scheduler>
+		<name></name> <!-- One of six values are allowed: FCFS || PRIORITY || RR || SJF || SRTF
+							When no value is provided, the scheduling algorithm executes
+							each simulated process for a random amount of time. -->
+		<quantum></quantum><!-- used only for RR, specify an integer value indicating
+							number of CPU clock cycles per process. --> 
+	</scheduler>
+	<process>
+		<id>p1</id> <!-- Each id in a scenario file should be unique, any characters are valid. -->
+		<arrival>0</arrival> <!-- The simulated time that the process arrives in the ready queue.
+							A zero (0) indicates that the simulated process arrives in the
+							ready queue before any process starts to execute. -->
+		<instructions>
+			<instruction>CCC2</instruction> <!-- The triple-C instruction, officially called the
+										CPU Clock Cycle instruction.
+										This instruction executes for 2 simulated CPU clock cycles.
+										The instructor prefers to call this the
+										Chocolate Chip Cookie instruction. -->
+			<instruction>CCC09</instruction> <!-- This instruction executes for 9 simulated CPU clock cycles-->
+			<instruction>CCC01</instruction>
+			<instruction>MEMA19</instruction> <!-- MEMory Allocation instruction, allocate 19 blocks of memory -->
+			<instruction>DEVA1</instruction> <!-- DEVice Allocation instruction, allocate device number 1. -->
+			<instruction>DEVF1</instruction> <!-- DEVice Free instruction, de-allocate (i.e., free) device number 1. -->
+			<instruction>MEMF9</instruction> <!-- MEMory Free instruction, de-allocate (i.e., free) 9 blocks of memory. -->
+			<!-- Each of the MEM and DEV instructions executes for one simulated CPU clock cycle. -->
+		</instructions>
+	</process>
+</simulation>
