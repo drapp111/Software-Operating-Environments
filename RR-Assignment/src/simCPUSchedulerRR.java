@@ -2,9 +2,11 @@
 
 public class simCPUSchedulerRR extends simCPUScheduler
 {
+	protected scenario scen;
 	public simCPUSchedulerRR(scenario scen, simCPU cpu, simProcessManager procMgr, simInterrupt interrupts, simLog log)
 	{
 		super(cpu, procMgr, interrupts, log);
+		this.scen = scen;
 		log.println("simCPUSchedulerRR started");
 	}
 
@@ -15,6 +17,10 @@ public class simCPUSchedulerRR extends simCPUScheduler
 	public boolean preemptExecutingCPU()
 	{
 		boolean preempt = false;
+		System.out.println("SCHEDULER QUANTUM: "+ scen.getSchedulerQuantum());
+		if(scen.getSchedulerQuantum()/4 > 0) {
+			preempt = true;
+		}
 		//Add code to this method, based on the method comments
 
 		return preempt;
@@ -28,6 +34,9 @@ public class simCPUSchedulerRR extends simCPUScheduler
 	public void updatePreemptedPCBstatistics(simPCB executingPCB, simTimer timer)
 	{
 		//Add code to this method, based on the method comments
+		System.out.println("update PCB Statistics");
+		executingPCB.addExecuteTime(timer.getClock());
+		executingPCB.setStartWaitTime(timer.getClock());
 	}
 
 	//purpose: Update two statistics in the PCB that is executing.
@@ -38,6 +47,9 @@ public class simCPUSchedulerRR extends simCPUScheduler
 	public void updateStartingPCBstatistics(simPCB executingPCB, simTimer timer)
 	{
 		//Add code to this method, based on the method comments
+		executingPCB.setStartExecuteTime(timer.getClock());
+		executingPCB.addWaitTime(timer.getClock());
+		executingPCB.setArrivalTime(timer.getClock());
 	}
 
 	//purpose: Update two statistics in the PCB that is executing.
@@ -47,5 +59,7 @@ public class simCPUSchedulerRR extends simCPUScheduler
 	public void updateTerminatedPCBstatistics(simPCB executingPCB, simTimer timer)
 	{
 		//Add code to this method, based on the method comments
+		executingPCB.addExecuteTime(timer.getClock());
+		executingPCB.setTurnaroundTime(timer.getClock());
 	}
 }
