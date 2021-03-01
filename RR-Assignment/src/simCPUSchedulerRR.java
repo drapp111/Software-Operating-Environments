@@ -40,7 +40,6 @@ public class simCPUSchedulerRR extends simCPUScheduler
 	public void updatePreemptedPCBstatistics(simPCB executingPCB, simTimer timer)
 	{
 		//Add code to this method, based on the method comments
-		System.out.println("update PCB Statistics");
 		executingPCB.addExecuteTime(timer.getClock());
 		executingPCB.setStartWaitTime(timer.getClock());
 	}
