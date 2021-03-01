@@ -7,7 +7,7 @@
 		<name>RR</name> <!-- One of six values are allowed: FCFS || PRIORITY || RR || SJF || SRTF
 							When no value is provided, the scheduling algorithm executes
 							each simulated process for a random amount of time. -->
-		<quantum>4</quantum><!-- used only for RR, specify an integer value indicating
+		<quantum>10</quantum><!-- used only for RR, specify an integer value indicating
 							number of CPU clock cycles per process. -->
 	</scheduler>
 	<process>
