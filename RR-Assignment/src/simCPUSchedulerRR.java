@@ -20,7 +20,6 @@ public class simCPUSchedulerRR extends simCPUScheduler
 	public boolean preemptExecutingCPU()
 	{
 		boolean preempt = false;
-		System.out.println("Preempt function value: " + quantumValue);
 		if(scen.getSchedulerQuantum() == this.quantumValue) {
 			System.out.println("Preempted");
 			preempt = true;
