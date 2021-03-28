@@ -1,3 +1,8 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -12,6 +17,8 @@ public class simProcessManager
 	private LinkedList<simPCB> readyQueue;
 	private LinkedList<simPCB> termQueue;
 	private LinkedList<simPCB> waitQueue;
+	Socket socket;
+	PrintWriter pout;
 
 	public simProcessManager(scenario scen, simCPU cpu, int port, simInterrupt interrupts, simLog log)
 	{
@@ -28,6 +35,16 @@ public class simProcessManager
 		readyQueue = new LinkedList<simPCB>();
 		termQueue = new LinkedList<simPCB>();
 		waitQueue = new LinkedList<simPCB>();
+		try {
+			socket = new Socket(InetAddress.getLocalHost(), 6013);
+
+			//Create an output stream for this connection
+			pout = new PrintWriter(socket.getOutputStream(), true);
+		}
+		catch(IOException ex) {
+			System.err.println(ex);
+			socket = null;
+		}
 	}
 
 	//purpose: Add PCB to device queue.
@@ -315,9 +332,18 @@ public class simProcessManager
 	//	xx is the integer value that immediately follows the DEVR/DEVW instruction
 	//	# is the integer value representing the simPCB number of the process wanting to execute the DEVR/DEVW instruction
 	//post-conditions: Message has been sent to the storage manager.
-	public void sendToStorageManager(String message)
-	{
-		//add code here to send message to the storage menager using an IPC mechanism.
+	public void sendToStorageManager(String message) {
+		try {
+			pout.println(message);
+			// close the socket; this client is done.
+			socket.close();
+		}
+		catch (IOException ioe) {
+			System.err.println(ioe);
+		}
+		catch (Exception e) {
+			System.err.println(e);
+		}
 	}
 
 	//purpose: Give CPU next instruction to be executed.
