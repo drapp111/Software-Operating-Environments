@@ -25,30 +25,56 @@ public class simStorageManager extends Thread
 	//post-conditions: simulated OS environment has been stopped.
 	public void run() {
 		try {
-			ServerSocket socket = new ServerSocket(6013);
-			
+			ServerSocket socket = new ServerSocket(80);
 			Socket client = socket.accept();
 			InputStream in = client.getInputStream();
 			BufferedReader bin = new BufferedReader(new InputStreamReader(in));
 			
 			String line;
-			while( (line = bin.readLine()) != null) {
-				if(line.equals("TERM")) {
+			boolean term = false;
+			while(term == false) {
+				line = bin.readLine();
+				if(line != null && line.equals("TERM")) {
+					log.println("Client received msg: " + line);
+					term = true;
 					break;
 				}
 				log.println("Client received msg: " + line);
-				int sleepTime = Integer.parseInt(line.substring(5, 7));
-				int pcbNumber = Integer.parseInt(line.substring(8));
+				String sleepTimeString = findSleepTime(line);
+				String pcbString = findPCB(line, sleepTimeString.length());
+				int sleepTime = Integer.parseInt(sleepTimeString);
+				int pcbNumber = Integer.parseInt(pcbString);
 				sleepTime(sleepTime*simOS.DEVICE_PAUSE_TIME);
 				interrupts.addInterrupt(simInterrupt.INTERRUPT.STRG_MGR_DONE, pcbNumber);
 			}
-				
 			client.close();
-			socket.close();
 		}
 		catch(IOException ex) {
 			
 		}
+	}
+	
+	public static String findSleepTime(String line) {
+		String num = "";
+		for(int i = 5; i < line.length(); i++) {
+			if(!line.substring(i,i+1).equals(" ")) {
+				num += line.substring(i, i+1);
+			}
+			else {
+				break;
+			}
+		}
+		return num;
+	}
+	
+	public static String findPCB(String line, int sleepTimeLength) {
+		String num = "";
+		for(int i = 5 + sleepTimeLength; i < line.length(); i++) {
+			if(!line.substring(i,i+1).equals(" ")) {
+				num += line.substring(i, i+1);
+			}
+		}
+		return num;
 	}
 	
 	public static void sleepTime(int time) {
