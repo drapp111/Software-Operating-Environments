@@ -16,7 +16,15 @@
 							A zero (0) indicates that the simulated process arrives in the
 							ready queue before any process starts to execute. -->
 		<instructions>
-			<instruction>DEVW1</instruction>
+			<instruction>DEVW4</instruction>
+			<instruction>CCC2</instruction> <!-- The triple-C instruction, officially called the
+										CPU Clock Cycle instruction.
+										This instruction executes for 2 simulated CPU clock cycles.
+										The instructor prefers to call this the
+										Chocolate Chip Cookie instruction. -->
+			<instruction>CCC09</instruction> <!-- This instruction executes for 9 simulated CPU clock cycles-->
+			<instruction>MEMA19</instruction> <!-- MEMory Allocation instruction, allocate 19 blocks of memory -->
+			<instruction>DEVA1</instruction> <!-- DEVice Allocation instruction, allocate device number 1. -->
 		</instructions>
 	</process>
 	<process>
@@ -25,7 +33,11 @@
 							A zero (0) indicates that the simulated process arrives in the
 							ready queue before any process starts to execute. -->
 		<instructions>
-			<instruction>DEVR1</instruction>
+			<instruction>DEVR10</instruction>
+			<instruction>CCC01</instruction>
+			<instruction>MEMA19</instruction> <!-- MEMory Allocation instruction, allocate 19 blocks of memory -->
+			<instruction>DEVA1</instruction> <!-- DEVice Allocation instruction, allocate device number 1. -->
+			<instruction>DEVF1</instruction> <!-- DEVice Free instruction, de-allocate (i.e., free) device number 1. -->
 		</instructions>
 	</process>
 	<process>
@@ -34,7 +46,8 @@
 							A zero (0) indicates that the simulated process arrives in the
 							ready queue before any process starts to execute. -->
 		<instructions>
-			<instruction>DEVW1</instruction>
+			<instruction>DEVW07</instruction>
+			<instruction>DEVF1</instruction> <!-- DEVice Free instruction, de-allocate (i.e., free) device number 1. -->
 		</instructions>
 	</process>
 	<process>
@@ -43,7 +56,9 @@
 							A zero (0) indicates that the simulated process arrives in the
 							ready queue before any process starts to execute. -->
 		<instructions>
-			<instruction>DEVR1</instruction>
+			<instruction>DEVR06</instruction>
+			<instruction>CCC01</instruction>
+			<instruction>MEMA19</instruction> <!-- MEMory Allocation instruction, allocate 19 blocks of memory -->
 		</instructions>
 	</process>
 </simulation>

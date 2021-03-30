@@ -6,6 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Declan Rapp/Desktop/Software-Operating-Environments/src/simulateOS.jar"/>
+	<classpathentry kind="lib" path="/Users/declanrapp/Desktop/Software-Operating-Environments/src/simulateOS.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

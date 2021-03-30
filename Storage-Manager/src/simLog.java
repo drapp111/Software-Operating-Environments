@@ -37,7 +37,7 @@ public class simLog
 			log.close();
 	}
 
-	public void println(String entry)
+	public synchronized void println(String entry)
 	{
 		if (logType.equals(CONSOLE))
 			System.out.println(entry);

@@ -18,6 +18,7 @@ public class simProcessManager
 	private LinkedList<simPCB> termQueue;
 	private LinkedList<simPCB> waitQueue;
 	Socket socket;
+	PrintWriter pout;
 
 	public simProcessManager(scenario scen, simCPU cpu, int port, simInterrupt interrupts, simLog log)
 	{
@@ -35,12 +36,14 @@ public class simProcessManager
 		termQueue = new LinkedList<simPCB>();
 		waitQueue = new LinkedList<simPCB>();
 		try {
-			socket = new Socket(InetAddress.getLocalHost(), 80);
+			socket = new Socket(InetAddress.getLocalHost(), port);
+			pout = new PrintWriter(socket.getOutputStream(), true);
 
 		}
 		catch(IOException ex) {
 			System.err.println(ex);
 			socket = null;
+			pout = null;
 		}
 	}
 
@@ -331,13 +334,10 @@ public class simProcessManager
 	//post-conditions: Message has been sent to the storage manager.
 	public void sendToStorageManager(String message) {
 		try {
-			PrintWriter pout = new PrintWriter(socket.getOutputStream(), true);
+			//Use the PrintWriter to send the message over the socket
 			pout.println(message);
-			// close the socket; this client is done.
 		}
-		catch (IOException ioe) {
-			System.err.println(ioe);
-		}
+		//Catch an error
 		catch (Exception e) {
 			System.err.println(e);
 		}

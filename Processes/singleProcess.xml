@@ -8,7 +8,7 @@
 							When no value is provided, the scheduling algorithm executes
 							each simulated process for a random amount of time. -->
 		<quantum></quantum><!-- used only for RR, specify an integer value indicating
-							number of CPU clock cycles per process. --> 
+							number of CPU clock cycles per process. -->
 	</scheduler>
 	<process>
 		<id>p1</id> <!-- Each id in a scenario file should be unique, any characters are valid. -->
@@ -16,7 +16,7 @@
 							A zero (0) indicates that the simulated process arrives in the
 							ready queue before any process starts to execute. -->
 		<instructions>
-			<instruction>CCC2</instruction> <!-- The triple-C instruction, officially called the
+			<instruction>DEVW06</instruction> <!-- The triple-C instruction, officially called the
 										CPU Clock Cycle instruction.
 										This instruction executes for 2 simulated CPU clock cycles.
 										The instructor prefers to call this the
