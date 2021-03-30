@@ -17,6 +17,7 @@ public class simProcessManager
 	private LinkedList<simPCB> readyQueue;
 	private LinkedList<simPCB> termQueue;
 	private LinkedList<simPCB> waitQueue;
+	private int port;
 	Socket socket;
 	PrintWriter pout;
 
@@ -35,6 +36,7 @@ public class simProcessManager
 		readyQueue = new LinkedList<simPCB>();
 		termQueue = new LinkedList<simPCB>();
 		waitQueue = new LinkedList<simPCB>();
+		this.port = port;
 		try {
 			socket = new Socket(InetAddress.getLocalHost(), port);
 			pout = new PrintWriter(socket.getOutputStream(), true);
@@ -334,6 +336,10 @@ public class simProcessManager
 	//post-conditions: Message has been sent to the storage manager.
 	public void sendToStorageManager(String message) {
 		try {
+			if(socket == null) {
+				socket = new Socket(InetAddress.getLocalHost(), port);
+				pout = new PrintWriter(socket.getOutputStream(), true);
+			}
 			//Use the PrintWriter to send the message over the socket
 			pout.println(message);
 		}
