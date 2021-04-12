@@ -6,12 +6,17 @@ public class simMemoryManager
 	private BigInteger pageSize;
 	private BigInteger osSize;
 	private simLog log;
+	private BigInteger physicalFrames;
 	
 	public simMemoryManager(scenario scen, simInterrupt interrupts, simLog log)
 	{
 		this.RAM = scen.getMemoryRAM();
 		this.pageSize = scen.getMemoryPageSize();
 		this.osSize = scen.getMemoryOSsize();
+		//Computer physical frames
+		this.physicalFrames = (this.RAM.divide(this.pageSize)).subtract(BigInteger.valueOf(1));
+		//Reserve frames for OS
+		physicalFrames.subtract(osSize.divide(pageSize));
 		interrupts.registerInterruptServiceRoutine(simInterrupt.INTERRUPT.MEM_MGR_INSTR, this);
 		this.log = log;
 		log.println("simMemoryManager.constructor: free physical frames; allocate OS space.");
@@ -23,6 +28,7 @@ public class simMemoryManager
 	//post-conditions: Logical pages for pcb has been mapped to physical frames.
 	public void createProcessMemorySpace(simPCB pcb)
 	{
+		
 		log.println("simMemoryManager.createProcessMemorySpace: create page table; map pages to frames.");
 	}
 

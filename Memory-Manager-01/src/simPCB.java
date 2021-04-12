@@ -20,6 +20,8 @@ public class simPCB
 
 	private int number;	//unique number within scenario
 	private static int nextNumber = 1;	//class variable: used to gaurentee each PCB has unique number
+	//Create page table
+	private ArrayList<BigInteger> pageTable;
 
 	public simPCB(String id, int arrivalTime,
 			ArrayList<simCPUInstruction> instructions, simLog log,
@@ -37,6 +39,7 @@ public class simPCB
 		turnaroundTime = 0;
 		number = nextNumber;
 		nextNumber++;
+		pageTable = new ArrayList<BigInteger>(imageSize.intValue());
 	}
 
 	//purpose: Add to the total execute time.
@@ -112,6 +115,10 @@ public class simPCB
 	public int getWaitTime()
 	{
 		return totalWaitTime;
+	}
+	
+	public ArrayList<BigInteger> getPageTable() {
+		return this.pageTable;
 	}
 
 	public void removeInstruction()
