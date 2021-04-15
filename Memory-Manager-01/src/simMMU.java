@@ -15,6 +15,7 @@ public class simMMU
 		if (executingPCB != null && instruction != null && instruction.getOpcode() == simCPUInstruction.OPCODE.CCC)
 		{
 			//Add code based on the method description above.
+			//CCC has the logical page number
 			
 			//You should modify the println statements below based on the logic you add.
 			log.println("simMMU: translate logical address to physical address");

@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.LinkedList;
 
 public class simMemoryManager
 {
@@ -7,6 +8,7 @@ public class simMemoryManager
 	private BigInteger osSize;
 	private simLog log;
 	private BigInteger physicalFrames;
+	private LinkedList<BigInteger> freeFrames;
 	
 	public simMemoryManager(scenario scen, simInterrupt interrupts, simLog log)
 	{
@@ -15,11 +17,20 @@ public class simMemoryManager
 		this.osSize = scen.getMemoryOSsize();
 		//Computer physical frames
 		this.physicalFrames = (this.RAM.divide(this.pageSize)).subtract(BigInteger.valueOf(1));
+		this.freeFrames = new LinkedList<BigInteger>();
+		initializeMemory(physicalFrames.intValue());
 		//Reserve frames for OS
 		physicalFrames.subtract(osSize.divide(pageSize));
+		
 		interrupts.registerInterruptServiceRoutine(simInterrupt.INTERRUPT.MEM_MGR_INSTR, this);
 		this.log = log;
 		log.println("simMemoryManager.constructor: free physical frames; allocate OS space.");
+	}
+	
+	private void initializeMemory(int physicalFrames) {
+		for(int i = 0; i < physicalFrames; i++) {
+			freeFrames.add(BigInteger.valueOf(i));
+		}
 	}
 
 	//purpose: Map pages to frames as part of process creation.
