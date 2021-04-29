@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+
 public class simMMU
 {
 	//purpose: Translate CCC page#,offset into frame#,offset. Report page fault when one occurs.
@@ -16,10 +20,32 @@ public class simMMU
 		{
 			//Add code based on the method description above.
 			//CCC has the logical page number
+			/*
+			 * get page table
+			 * check all values for valid translation
+			 * 		search memMgr for frame # + offset
+			 * 		if its there its good, if not, page fault
+			 */
 			
-			//You should modify the println statements below based on the logic you add.
-			log.println("simMMU: translate logical address to physical address");
-			log.println("simMMU: report page fault if one would occur.");
+			//Get the page table
+			PageTable table = executingPCB.getPageTable();
+			int imageSize = executingPCB.getImageSize().intValue();
+			int processPages = imageSize/memMgr.getPageSize();
+			//Get the page number from the instruction
+			int pageNumber = instruction.getOperand2();
+			//Get the offset number from the instruction
+			int offset = instruction.getOperand3();
+			//Check if the page number is within the logical space by checking if the page number is possible and if offset is less than page size
+			if(pageNumber >= processPages) {
+				log.println("simMMU: page fault occurred, outside of logical address space");
+			}
+			else if(pageNumber > table.size()-1 || offset > memMgr.getPageSize()) {
+				log.println("simMMU: page fault occurred, frame NOT mapped to logical address");
+			}
+			else {
+				int frameNumber = table.get(pageNumber);
+				log.println("simMMU: Page #" + pageNumber + " Offset #" + offset + " translated to Frame #" + frameNumber + " Offset #" + offset);
+			}
 		}
 	}
 }
