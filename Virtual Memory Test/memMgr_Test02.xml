@@ -1,0 +1,35 @@
+<simulation>
+	<log>console</log>
+	<scheduler>
+		<!-- Not used for memory manager assignments.
+		The scheduling algorithm used will ALWAYS be RR with a quanutm of 4. -->
+		<name></name>
+		<quantum></quantum>
+	</scheduler>
+	<!-- Largest RAM, largest pageSize, largest osSize -->
+	<memory>
+		<!-- 8,589,934,592 Bytes; 1,048,576 total frames; frame numbers are [0,1048575] -->
+		<RAM>8GB</RAM><pageSize>8192</pageSize>	<!-- 8KB -->
+		<osSize>524288000</osSize>	<!-- 500MB; mapped to 64,000 frames [0,63999]. -->
+	</memory>
+	<!-- One process with largest imageSize. -->
+	<process>
+		<id>p1</id>
+		<arrival>0</arrival>
+		<!-- largest imageSize is 1TB -->
+		<imageSize>1099511627776</imageSize> <!-- 1TB; mapped to 984,576 frames [64000,1048575]. -->
+		<instructions>
+			<!--clock 3, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC3,0,0</instruction>
+			<!--clock 2, access last byte of logical address space (last page, last byte offset)-->
+			<!-- This CCC instruction has page number not mapped to a frame. This should cause a page fault! -->
+			<instruction>CCC2,134217727,8191</instruction>
+			<!-- pages [0,18] swapped out; frames [64000,64018] allocated -->
+			<instruction>MEMA19</instruction>
+			<!-- frames [64000,64008] freed -->
+			<instruction>MEMF9</instruction>
+			<instruction>DEVW1</instruction>
+			<!-- all frames in page table freed [64019,1048575]; frames [64009,64018] freed; removed 19 pages from swap file -->
+		</instructions>
+	</process>
+</simulation>

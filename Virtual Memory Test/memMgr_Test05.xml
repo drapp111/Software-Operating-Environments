@@ -1,0 +1,53 @@
+<simulation>
+	<log>console</log>
+	<scheduler>
+		<!-- Not used for memory manager assignments.
+		The scheduling algorithm used will ALWAYS be RR with a quanutm of 4. -->
+		<name></name>
+		<quantum></quantum>
+	</scheduler>
+	<!-- Smallest RAM, medium pageSize, medium osSize -->
+	<memory>
+		<!-- 1,073,741,824 Bytes; 1,048,576 total frames; frame numbers are [0,1048575] -->
+		<RAM>1GB</RAM><pageSize>1024</pageSize>	<!-- 1KB -->
+		<osSize>272629750</osSize>	<!-- 260MB minus 10 Bytes; mapped to 266,240 frames [0,266239]. -->
+	</memory>
+	<!-- Many processes; total osSize plus imageSizes fits into RAM with no free frames. -->
+	<process>
+		<id>p1</id>
+		<arrival>0</arrival>
+		<!-- smallest imageSize is pageSize*100 -->
+		<imageSize>102400</imageSize> <!-- 100KB; mapped to 100 frames [266240,266339]. -->
+		<instructions>
+			<!--clock 1, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC1,0,0</instruction>
+			<!--clock 5, access last byte of logical address space (last page, last byte offset)-->
+			<instruction>CCC5,99,1023</instruction>
+			<instruction>MEMF21</instruction>
+		</instructions>
+	</process>
+	<process>
+		<id>p2</id>
+		<arrival>2</arrival>
+		<imageSize>734003320</imageSize> <!-- 700MB plus 120 Bytes; mapped to 716,801 frames [266340,983140]. -->
+		<instructions>
+			<!--clock 1, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC1,0,0</instruction>
+			<!--clock 5, access last byte of logical address space (last page, last byte offset)-->
+			<instruction>CCC5,716800,119</instruction>
+			<instruction>MEMF21</instruction>
+		</instructions>
+	</process>
+	<process>
+		<id>p3</id>
+		<arrival>3</arrival>
+		<imageSize>67005440</imageSize> <!-- 63MB plus 923KB; mapped to 65,435 frames [983141,1048575]. -->
+		<instructions>
+			<!--clock 5, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC5,0,0</instruction>
+			<!--clock 7, access last byte of logical address space (last page, last byte offset)-->
+			<instruction>CCC7,65434,1023</instruction>
+			<instruction>MEMF21</instruction>
+		</instructions>
+	</process>
+</simulation>

@@ -1,0 +1,70 @@
+<simulation>
+	<log>console</log>
+	<scheduler>
+		<!-- Not used for memory manager assignments.
+		The scheduling algorithm used will ALWAYS be RR with a quanutm of 4. -->
+		<name></name>
+		<quantum></quantum>
+	</scheduler>
+	<!-- Largest RAM, medium pageSize, medium osSize -->
+	<memory>
+		<!-- 2,097,152 total frames; frame numbers are [0,2097151] -->
+		<RAM>8GB</RAM><pageSize>4096</pageSize>	<!-- 4KB -->
+		<osSize>418381828</osSize>	<!-- 399MB plus 4 Bytes; mapped to 102,145 frames [0,102144] -->
+	</memory>
+	<!-- Many processes; total osSize plus imageSizes exceeds RAM by one page/frame. -->
+	<process>
+		<id>p1</id>
+		<arrival>0</arrival>
+		<!-- smallest imageSize is pageSize*100 -->
+		<imageSize>409600</imageSize> <!-- 400KB; mapped to 100 frames [102145,102244]. -->
+		<instructions>
+			<!--clock 1, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC1,0,0</instruction>
+			<!--clock 5, access last byte of logical address space (last page, last byte offset)-->
+			<instruction>CCC5,99,4095</instruction>
+			<instruction>MEMF21</instruction>
+		</instructions>
+	</process>
+	<process>
+		<id>p2</id>
+		<arrival>2</arrival>
+		<imageSize>734003320</imageSize> <!-- 700MB plus 120 Bytes; mapped to 179,201 frames [102245,281445]. -->
+		<instructions>
+			<!--clock 4, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC4,0,0</instruction>
+			<!--clock 2, access last byte of logical address space (last page, last byte offset)-->
+			<instruction>CCC2,179200,119</instruction>
+			<instruction>MEMF21</instruction>
+		</instructions>
+	</process>
+	<process>
+		<id>p3</id>
+		<arrival>3</arrival>
+		<imageSize>7437132800</imageSize> <!-- 6GB plus 948MB plus 617KB;
+																mapped to 1,815,707 frames [281446,2097151].
+																Last logical page is not mapped to a physical frame! -->
+		<instructions>
+			<!--clock 5, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC5,0,0</instruction>
+			<!--clock 1, access last page mapped to a frame-->
+			<instruction>CCC1,1815705,4095</instruction>
+			<!--clock 1, access last page of logical address space (this page not mapped to a frame)-->
+			<instruction>CCC1,1815706,0</instruction>
+			<instruction>MEMF21</instruction>
+		</instructions>
+	</process>
+	<process>
+		<id>p4</id>
+		<arrival>4</arrival>
+		<!-- smallest imageSize is pageSize*100 -->
+		<imageSize>409600</imageSize> <!-- 400KB; mapped to 0 frames - none available.. -->
+		<instructions>
+			<!--clock 1, access first byte of logical address space (first page, first byte in page)-->
+			<instruction>CCC1,0,0</instruction>
+			<!--clock 5, access last byte of logical address space (last page, last byte offset)-->
+			<instruction>CCC5,99,4095</instruction>
+			<instruction>MEMF21</instruction>
+		</instructions>
+	</process>
+</simulation>
