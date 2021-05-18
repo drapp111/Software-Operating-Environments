@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class simMemoryManager
@@ -8,11 +9,11 @@ public class simMemoryManager
 	private BigInteger osSize;
 	private simLog log;
 
-	//added as part of solution
+	//added as part of solultion
 	private simMemoryManagerFree memFree;
-	private simDynamicMemoryManager dynamicMem;
+	private simVirtualMemoryManager virtMem;
+	private ArrayList<Integer> dynamicallyAllocatedFrames;
 
-	//added
 
 	public simMemoryManager(scenario scen, simInterrupt interrupts, simLog log)
 	{
@@ -23,8 +24,9 @@ public class simMemoryManager
 		this.log = log;
 
 		//added as part of solution
-		memFree = new simMemoryManagerFree(RAM, pageSize, osSize, log);
-		dynamicMem = new simDynamicMemoryManager(log);
+		this.virtMem = new simVirtualMemoryManager(log);
+		memFree = new simMemoryManagerFree(RAM, pageSize, osSize, log, virtMem);
+		dynamicallyAllocatedFrames = new ArrayList<Integer>();
 	}
 
 	//purpose: Map pages to frames as part of process creation.
@@ -34,7 +36,7 @@ public class simMemoryManager
 	public void createProcessMemorySpace(simPCB pcb)
 	{
 		//added as part of solution
-		pcb.createPageTable(this);		
+		pcb.createPageTable(this);
 	}
 
 	//purpose: Allocate or free memory.
@@ -50,8 +52,17 @@ public class simMemoryManager
 			simCPUInstruction instruction = interruptMEM.getInstruction();
 			simPCB pcb = interruptMEM.getPCB();
 			//Need to allocation/deallocate memory dynamically, based on the MEM instruction.
-			log.println("Made it here");
-			pcb.dynamicMemoryAllocation(this, this.memFree, instruction);
+			if(instruction.getOpcode().equals(simCPUInstruction.OPCODE.MEMA)) {
+				log.println("simMemoryManager.interruptServiceRoutine: dynamic memory allocation");
+				pcb.dynamicMemoryAllocation(this, instruction);
+			}
+			else if(instruction.getOpcode().equals(simCPUInstruction.OPCODE.MEMF)) {
+				log.println("simMemoryManager.interruptServiceRoutine: dynamic memory deallocation");
+				pcb.dynamicMemoryDeallocation(virtMem, this, instruction);
+			}
+			else {
+				log.println("simMemoryManager.interruptServiceRoutine: unknown instruction request");
+			}
 		}
 		else
 			log.println("simMemoryManager.interruptServiceRoutine unknown data");
@@ -67,8 +78,9 @@ public class simMemoryManager
 		log.println("simMemoryManager.terminateProcess: number of free frames (before)=" + memFree.getNumberOfFreeFrames());
 		pcb.freeAllProcessFrames(memFree);
 		log.println("simMemoryManager.terminateProcess: number of free frames (after)=" + memFree.getNumberOfFreeFrames());
-
+		
 		//Need to clean up the swap file (i.e., virtual memory manager) for this terminating process.
+		virtMem.clear();
 	}
 
 /*  ADDED as part of solution to memory manager assignment */
@@ -105,17 +117,14 @@ public class simMemoryManager
 		return pageSize;
 	}
 	
-	//Added functions
-	
-	public simDynamicMemoryManager getDynamicMemoryManager() {
-		return this.dynamicMem;
+	public void addDynamicFrame(int frameNumber) {
+		this.dynamicallyAllocatedFrames.add(frameNumber);
 	}
 	
-	public void addDynamicallyAllocatedFrame(int frameNumber) {
-		this.dynamicMem.addDynamicallyAllocatedFrame(frameNumber);
-	}
-	
-	public Integer removeFirstDynamicallyAllocatedFrame() {
-		return this.dynamicMem.removeDynamicallyAllocatedFrame();
+	public Integer removeDynamicFrame() {
+		if(dynamicallyAllocatedFrames.size() == 0) {
+			return null;
+		}
+		return this.dynamicallyAllocatedFrames.remove(0);
 	}
 }

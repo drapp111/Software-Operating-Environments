@@ -1,22 +1,26 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class simSwapFile {
 	
-	private LinkedList<Integer> swapFile;
+	private ArrayList<Integer> swapFile;
 	private simPageTable pageTable;
 	private simLog log;
-
+	private int swapNumber;
 	
 	public simSwapFile(simPageTable pageTable, simLog log) {
 		this.pageTable = pageTable;
 		this.log = log;
-		swapFile = new LinkedList<Integer>();
+		swapFile = new ArrayList<Integer>();
+		swapNumber = 0;
 	}
 	
-	public int pageSwap() {
-		int freedFrame = pageTable.removePage(0);
-		pageTable.addPage(freedFrame);
-		return freedFrame;
+	public int getUnswappedPage() {
+		return this.swapNumber;
+	}
+	
+	public void pageSwap(int pageNumber, int frameNumber) {
+		swapFile.set(pageNumber, frameNumber);
+		swapNumber++;
 	}
 	
 }

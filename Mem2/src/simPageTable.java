@@ -11,13 +11,14 @@ public class simPageTable
 	private simLog log;
 
 	private ArrayList<Integer> pageTable;
-	private simSwapFile swapFile;
+	private int largestUnusedPage;
 
 	public simPageTable(simPCB pcb, simMemoryManager memMgr, simLog log)
 	{
 		this.memMgr = memMgr;
 		this.log = log;
 		this.pcb = pcb;
+		this.largestUnusedPage = 0;
 
 		BigInteger pageSize = memMgr.getPageSize();
 		BigInteger nbrProcessPages;
@@ -78,6 +79,8 @@ public class simPageTable
 			if (frameNumber != null)
 			{
 				pageTable.add(frameNumber);
+				this.largestUnusedPage++;
+				
 				counter = counter.add(BigInteger.ONE);
 				//Save first and last frame number used in mapping pages.
 				if (firstFrameNumber == null)
@@ -86,7 +89,7 @@ public class simPageTable
 			}
 			else
 				//No more free frames, stop mapping pages to frames.
-				break;
+				counter = nbrProcessPages;
 		}
 		//Subtract 1 to accurately display largest page number.
 		BigInteger temp = nbrProcessPages.subtract(BigInteger.ONE);
@@ -95,7 +98,7 @@ public class simPageTable
 					temp.toString() + " to zero frames (no frames are free).");
 		else
 			log.println("simPageTable.mapPagesToFrames: mapping pages 0..." +
-					temp.toString() + " to frames " +
+					(largestUnusedPage-1) + " to frames " +
 					firstFrameNumber.toString() + "..." + lastFrameNumber.toString());
 	}
 
@@ -113,68 +116,65 @@ public class simPageTable
 		return frameNumber;
 	}
 	
-	//Added functions
-	
-	public int size() {
-		return this.pageTable.size();
-	}
-	
-	public int pageSwap() {
-		if(swapFile == null) {
-			this.swapFile = new simSwapFile(this, log);
-		}
-		//Free a frame for swapping
-		int unswappedPage = swapFile.getUnswappedPage();
-		int swapFrame = this.getFrameNumber(unswappedPage);
-		swapFile.pageSwap(unswappedPage, swapFrame);
-		return swapFrame;
-	}
-	
-	public void addPage(int frame) {
-		pageTable.add(frame);
-	}
-	
-	public void dynamicMemoryAllocation(simMemoryManager memMgr, BigInteger nbrAllocationPages) {
-		log.println("simPageTable.dynamicMemoryAllocation: dynamically mapping pages to frames");
-		int swappedPages = 0;
-		BigInteger counter = BigInteger.ZERO;
-		while (counter.compareTo(nbrAllocationPages) == -1)
+	public void allocateMemory(simMemoryManager memMgr, int nbrPages) {
+		log.println("simPageTable.allocateMemory: dynamically mapping " + nbrPages + " pages");
+		int counter = 0;
+		Integer firstFrameNumber = null;
+		Integer lastFrameNumber = null;
+		while (counter < nbrPages)
 		{
 			Integer frameNumber = memMgr.getFreeFrameNumber(pcb);
 			if (frameNumber != null)
 			{
-				pageTable.add(frameNumber);
-				memMgr.addDynamicallyAllocatedFrame(frameNumber);
-				counter = counter.add(BigInteger.ONE);
+				memMgr.addDynamicFrame(frameNumber);
+				counter++;
+				//Save first and last frame number used in mapping pages.
+				if (firstFrameNumber == null)
+					firstFrameNumber = frameNumber;
+				lastFrameNumber = frameNumber;
 			}
-			else {
-				//When no more free frames are available 
-				if(swapFile == null) {
-					this.swapFile = new simSwapFile(this, log);
-				}
-				this.pageSwap();
-				counter = counter.add(BigInteger.ONE);
-			}
+			else
+				//No more free frames, stop mapping pages to frames.
+				counter = nbrPages;
 		}
-		log.println("simPageTable.dynamicMemoryAllocation: swapped " + swappedPages + " pages");
 	}
 	
-	public void dynamicMemoryDeallocation(simMemoryManager memMgr, simMemoryManagerFree freeMem, BigInteger nbrDeallocationPages) {
-		log.println("simPageTable.dynamicMemoryAllocation: dynamically freeing frames");
-		BigInteger counter = BigInteger.ZERO;
-		while (counter.compareTo(nbrDeallocationPages) == -1)
+	public void setFrameNumber(int pageNumber, int frameNumber) {
+		pageTable.set(pageNumber, frameNumber);
+	}
+	
+	public void freeMemory(simVirtualMemoryManager virtMem, simMemoryManager memMgr, int nbrPages) {
+		log.println("simPageTable.freeMemory: dynamically freeing frames");
+		int counter = 0;
+		int freedFrames = 0;
+		int swappedFrames = 0;
+		while (counter < nbrPages)
 		{
-			Integer frameNumber = memMgr.removeFirstDynamicallyAllocatedFrame();
+			Integer frameNumber = memMgr.removeDynamicFrame();
 			if (frameNumber != null) {
 				pageTable.remove(frameNumber);
-				freeMem.addFreeFrame(frameNumber);
+				if(virtMem.contains(frameNumber)) {
+					int index = virtMem.getOriginalPage(frameNumber);
+					this.setFrameNumber(index, frameNumber);
+					virtMem.remove(frameNumber);
+					swappedFrames++;
+					log.println("simPageTable.freeMemory: freed frame was a swap frame, frame allocated back to original page but not completely free");
+				}
+				else {
+					memMgr.getMemoryManagerFree().addFreeFrame(frameNumber);
+					freedFrames++;
+				}
 			}
 			else {
-				log.println("simPageTable.dynamicMemoryAllocation: no dynamically allocated frames to free");
-				return;
+				log.println("simPageTable.freeMemory: no dynamically allocated frames to free");
+				break;
 			}
-			counter = counter.add(BigInteger.ONE);
+			counter++;
 		}
-		log.println("simPageTable.dynamicMemoryAllocation: freed " + nbrDeallocationPages.toString() + " frames");
+		log.println("simPageTable.freeMemory: freed " + freedFrames + " frames, unswapped " + swappedFrames);
+	}
+	
+	public int size() {
+		return this.pageTable.size();
 	}
 }

@@ -222,21 +222,19 @@ public class simPCB
 		return pageTable.getFrameNumber(pageNumber);
 	}
 	
-	//Added functions
-	
-	public void dynamicMemoryAllocation(simMemoryManager mgr, simMemoryManagerFree freeMem, simCPUInstruction instruction) {
-		if(instruction.getOpcode().equals(simCPUInstruction.OPCODE.MEMA)) {
-			BigInteger allocationSize = BigInteger.valueOf(instruction.getOperand());
-			pageTable.dynamicMemoryAllocation(mgr, allocationSize);
-		}
-		else if(instruction.getOpcode().equals(simCPUInstruction.OPCODE.MEMF)) {
-			BigInteger deallocationSize = BigInteger.valueOf(instruction.getOperand());
-			pageTable.dynamicMemoryDeallocation(mgr, freeMem, deallocationSize);
-		}
+	public void setFrameNumber(int pageNumber, int frameNumber) {
+		pageTable.setFrameNumber(pageNumber, frameNumber);
 	}
 	
-	public int pageSwap() {
-		return pageTable.pageSwap();
+	public void dynamicMemoryAllocation(simMemoryManager memMgr, simCPUInstruction instruction) {
+		pageTable.allocateMemory(memMgr, instruction.getOperand());
 	}
 	
+	public void dynamicMemoryDeallocation(simVirtualMemoryManager virtMem, simMemoryManager memMgr, simCPUInstruction instruction) {
+		pageTable.freeMemory(virtMem, memMgr, instruction.getOperand());
+	}
+	
+	public int getPageTableSize() {
+		return this.pageTable.size();
+	}
 }

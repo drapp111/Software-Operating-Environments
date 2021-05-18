@@ -7,6 +7,9 @@ public class simMemoryManagerFree
 	private int firstFreeFrame;
 	private int numberRAMFrames;
 	private LinkedList<Integer> freeFrameQueue;
+	
+	//Added
+	simVirtualMemoryManager virtMem;
 
 	//purpose: 
 	//assumptions: this.RAM % this.pageSize == 0;
@@ -16,13 +19,14 @@ public class simMemoryManagerFree
 	//inputs: None.
 	//post-conditions: firstFreeFrame and lastFreeFrame are set.
 	//			freeFrameQueue created but empty.
-	public simMemoryManagerFree(BigInteger RAM, BigInteger pageSize, BigInteger osSize, simLog log)
+	public simMemoryManagerFree(BigInteger RAM, BigInteger pageSize, BigInteger osSize, simLog log, simVirtualMemoryManager virtMem)
 	{
 		this.log = log;
+		this.virtMem = virtMem;
 		freeFrameQueue = new LinkedList<Integer>();
 		BigInteger nbrRAMFrames, nbrOSFrames, nbrFreeFrames;
 		BigInteger[] divideRemainder;
-
+		
 		try
 		{
 			//Compute total number of RAM frames
@@ -86,7 +90,7 @@ public class simMemoryManagerFree
 			//Need to use virtual memory manager to obtain a free frame.
 			log.println("simMemoryManagerFree.getFrameNumber: no more free frames; need to use virtual memory");
 			//Following statement is temporary. Should be replaced with use of virtual memory manager logic.
-			frameNumber = pcb.pageSwap();
+			frameNumber = virtMem.pageSwap(pcb);
 		}
 		return frameNumber;
 	}
